@@ -1,0 +1,5 @@
+Student ID: 4202670038
+Name: Kevine Kabarira
+Programme: Electronic and Telecommunication Technology
+Campus: ULK 
+Status: Active
