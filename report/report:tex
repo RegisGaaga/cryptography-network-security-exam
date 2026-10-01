@@ -1,0 +1,217 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\title{Cryptography and Network Security Exam}
+Student ID: 4202670027}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This project assesses security risks in a polytechnic institute environment and demonstrates basic cryptography, file integrity checking, and network security controls. Sample data was used throughout the project. No real student records, passwords, or encryption keys were uploaded to the repository.
+
+\section{Risk Assessment}
+
+\subsection{Assets, Vulnerabilities and Consequences}
+
+\begin{itemize}
+\item \textbf{Student records server:} Guest network access could allow unauthorised access to student records.
+\item \textbf{Staff accounts:} Weak passwords could lead to account compromise.
+\item \textbf{File-transfer system:} Unencrypted transfers could allow data interception.
+\end{itemize}
+
+\subsection{Risk Ranking}
+
+\begin{itemize}
+\item \textbf{Guest access:} Likelihood - High. Impact - High. Guests may reach sensitive records.
+\item \textbf{Weak passwords:} Likelihood - High. Impact - High. Weak passwords can be guessed or compromised.
+\item \textbf{Unencrypted transfers:} Likelihood - Medium. Impact - High. Data can be intercepted during transfer.
+\end{itemize}
+
+\subsection{Recommended Controls}
+
+\begin{itemize}
+\item Guest access: Use firewall rules and network segmentation.
+\item Weak passwords: Enforce a strong password policy.
+\item Unencrypted transfers: Use SFTP.
+\end{itemize}
+
+\section{Python Security Toolkit}
+
+A Python security toolkit was developed to demonstrate encryption, decryption, hashing, integrity verification, and error handling.
+
+\subsection{Encryption}
+
+The toolkit uses Fernet symmetric encryption from the Python \texttt{cryptography} library. A sample student record was encrypted and saved as an encrypted output file.
+
+The encryption key was stored outside the GitHub repository to prevent exposure.
+
+\subsection{Decryption and Verification}
+
+The encrypted file was successfully decrypted. The SHA-256 hash of the original file was compared with the SHA-256 hash of the decrypted file.
+
+\begin{verbatim}
+Original SHA-256:
+9072923fe0a1c93d2fe2f0f564281c78c0d6e7cb9ddb1a315578fcbaf428b877
+
+Decrypted SHA-256:
+9072923fe0a1c93d2fe2f0f564281c78c0d6e7cb9ddb1a315578fcbaf428b877
+
+Contents match: True
+Integrity check: PASS
+\end{verbatim}
+
+The matching hashes confirm that the decrypted file has the same contents as the original sample file.
+
+\subsection{Integrity Detection}
+
+A copy of the sample file was modified after the original hash was calculated.
+
+\begin{verbatim}
+Original hash:
+9072923fe0a1c93d2fe2f0f564281c78c0d6e7cb9ddb1a315578fcbaf428b877
+
+Modified file hash:
+50d29235c461aec22174106942a54ea16096fbb5a55aacdb52ba74150cdb9f
+
+Modified file detected: True
+\end{verbatim}
+
+This demonstrates that SHA-256 can detect changes to the file.
+
+\subsection{Error Handling}
+
+The toolkit was tested with a missing input file. The test correctly raised a \texttt{FileNotFoundError}.
+
+\section{Testing}
+
+Python's built-in \texttt{unittest} framework was used.
+
+The tests included:
+
+\begin{enumerate}
+\item SHA-256 hash verification.
+\item Password strength checking.
+\item Missing-file error handling.
+\item Encryption and decryption execution.
+\item Integrity verification.
+\end{enumerate}
+
+The missing-file test produced:
+
+\begin{verbatim}
+Ran 1 test
+OK
+\end{verbatim}
+
+The main toolkit execution produced:
+
+\begin{verbatim}
+File encrypted successfully.
+File decrypted successfully.
+Contents match: True
+Integrity check: PASS
+\end{verbatim}
+
+\section{Network Traffic Filtering}
+
+Network traffic filtering was tested in an authorised laboratory environment using UFW.
+
+The Ubuntu laboratory server used IP address \texttt{192.168.56.104}. The Windows laboratory client used IP address \texttt{192.168.56.1}.
+
+A Python HTTP server was used on TCP port 8080.
+
+\begin{verbatim}
+python3 -m http.server 8080 --bind 0.0.0.0
+\end{verbatim}
+
+The firewall used a default deny policy for incoming traffic and allowed outgoing traffic.
+
+\begin{verbatim}
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw enable
+\end{verbatim}
+
+For the permitted test, TCP port 8080 was temporarily allowed:
+
+\begin{verbatim}
+sudo ufw allow 8080/tcp
+\end{verbatim}
+
+The Windows client tested the connection:
+
+\begin{verbatim}
+Test-NetConnection 192.168.56.104 -Port 8080
+\end{verbatim}
+
+Result:
+
+\begin{verbatim}
+TcpTestSucceeded : True
+\end{verbatim}
+
+The open rule was then removed:
+
+\begin{verbatim}
+sudo ufw delete allow 8080/tcp
+\end{verbatim}
+
+An explicit deny rule was added:
+
+\begin{verbatim}
+sudo ufw deny from 192.168.56.1 to any port 8080 proto tcp
+\end{verbatim}
+
+The first blocked test was:
+
+\begin{verbatim}
+Test-NetConnection 192.168.56.104 -Port 8080
+\end{verbatim}
+
+Result:
+
+\begin{verbatim}
+TcpTestSucceeded : False
+\end{verbatim}
+
+A second blocked test checked port 8081:
+
+\begin{verbatim}
+Test-NetConnection 192.168.56.104 -Port 8081
+\end{verbatim}
+
+Result:
+
+\begin{verbatim}
+TcpTestSucceeded : False
+\end{verbatim}
+
+The tests therefore demonstrated one permitted TCP connection and two blocked TCP connections.
+
+Detailed firewall commands and test results are documented in \texttt{filter\_tests.md}.
+
+\section{GitHub Repository}
+
+The complete project is maintained in the GitHub repository:
+
+\begin{center}
+\url{https://github.com/kevine-do/cryptography-network-security-exam}
+\end{center}
+
+The repository contains the source code, tests, risk assessment, firewall evidence, documentation, and technical report.
+
+\section{Conclusion}
+
+The project identified security risks and recommended suitable controls. A Python security toolkit was developed to encrypt and decrypt sample student data, calculate SHA-256 hashes, detect file modification, and handle missing files.
+
+The tests demonstrated successful encryption, decryption, integrity verification, and error handling. Network traffic filtering was also tested in an authorised laboratory environment using UFW.
+
+The project demonstrates practical applications of cryptography, file integrity checking, access control, and network security.
+
+\end{document}
